@@ -14,7 +14,7 @@ end;
 
 procedure print_IOC(pt: ansistring; max_interval: integer);
 var
-    interval, i: integer;
+    interval: integer;
 begin
     for interval := 1 to max_interval do begin
         writeln(format('%2d (%.4f) %s', [interval,

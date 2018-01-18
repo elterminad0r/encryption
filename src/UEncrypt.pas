@@ -37,11 +37,11 @@ begin
         if c in alpha then begin
             if c in upper then
                 vigenere := vigenere + chr(65 + (alpha_ord(c)
-                                               + alpha_ord(pass[i mod length(pass) + 1])) mod 26)
+                                               + alpha_ord(pass[i + 1])) mod 26)
             else
                 vigenere := vigenere + chr(97 + (alpha_ord(c)
-                                               + alpha_ord(pass[i mod length(pass) + 1])) mod 26);
-            i := i + 1;
+                                               + alpha_ord(pass[i + 1])) mod 26);
+            i := (i + 1) mod length(pass);
         end else
             vigenere := vigenere + c;
 end;

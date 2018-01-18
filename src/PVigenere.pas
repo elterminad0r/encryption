@@ -18,11 +18,11 @@ begin
         if paramstr(arg_i) = '--decrypt' then
             encryptor := @un_vigenere
         else
-            pass := paramstr(arg_i);
-    try
-        pass := alph_s[1 + proper_mod(strtoint(paramstr(1)), 26)];
-    except
-        on EConvertError do;
-    end;
+            try
+                pass := alph_s[1 + proper_mod(strtoint(paramstr(arg_i)), 26)];
+            except
+                on EConvertError do
+                    pass := paramstr(arg_i);
+            end;
     write(output, encryptor(read_file(input), pass));
 end.
