@@ -10,6 +10,7 @@
 \usepackage[parfill]{parskip}
 
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 
 \usepackage{graphicx}
 
@@ -22,7 +23,6 @@
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
-
 \lstdefinestyle{mystyle}{
     backgroundcolor=\color{backcolour},   
     commentstyle=\color{codegreen},
@@ -257,7 +257,19 @@ end.
     be easily done with \verb|$ bin/Vigenere key < input.txt > output.txt|, or
     alternatively they might use the cat command. Leaving to writing to STDOUT
     is a lot easier for dynamic testing purposes, and doesn't sacrifice any
-    functionality.
+    functionality.  It should be fairly obvious that reading from STDIN
+    constitutes reading from a file, but here is also a demonstration of how
+    this could be used with an output file rather than writing directly to the
+    terminal:
+
+\begin{lstlisting}[caption=Use of an output file]
+$ echo "There should be one-- and preferably only one --obvious way to do it." | bin/Vigenere Guido > zen.txt
+$ cat zen.txt 
+Zbmus ybwxzj vm rbk-- uvg dxynhfgvtb ctfg rbk --ijywuoa zoe nw gc on.
+$ bin/Vigenere --decrypt Guido < zen.txt
+There should be one-- and preferably only one --obvious way to do it.
+\end{lstlisting}
+\iffalse $ \fi %syntax
 
     \section{Compiling and testing}
 
@@ -361,6 +373,28 @@ jih shkno ugein gyr pwsce kgiu ycu mdbl fzk
     a recoverable key, to demonstrate also the decryption, followed by 100
     cryptographically secure random bytes from /dev/urandom resulting in an
     unbreakable (undecryptable) encryption.
+
+    I also performed some further systematic tests after determining that
+    program could run successfully:
+
+	\begin{center}
+		\begin{tabular}{||l | c||} 
+		\hline
+		Command & Output \\ [0.5ex] 
+		\hline\hline
+        \$ echo Dog | bin/Vigenere b & Eph \\
+        \$ echo Dog | bin/Vigenere 1 & Eph \\
+        \$ echo Dog | bin/Vigenere abc & Dpi \\
+        \$ echo Eph | bin/Vigenere --decrypt b & Dog \\
+        \$ echo xy\_z2 | bin/Vigenere 33 & ef\_g2 \\
+        \$ echo ef\_g2 | bin/Vigenere --decrypt 33 & xy\_z2 \\
+        \$ echo "Izaak van Dongen" | bin/Vigenere Python3.7 & Xxthy imu Tdlzlb \\
+        \$ echo "Xxthy imu Tdlzlb" | bin/Vigenere --decrypt Python3.7 & Izaak van Dongen \\ [1ex] 
+        \hline
+	\end{tabular}
+	\end{center}
+
+    Each of these is correct behaviour.
 
     \section{Determing keyword length}
 
