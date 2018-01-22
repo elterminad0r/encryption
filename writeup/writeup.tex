@@ -47,6 +47,10 @@
     literate={~} {$\sim$}{1}
 }
 
+\newcommand\Tstrut{\rule{0pt}{2.6ex}}       % "top" strut
+\newcommand\Bstrut{\rule[-0.9ex]{0pt}{0pt}} % "bottom" strut
+\newcommand{\TBstrut}{\Tstrut\Bstrut} % top&bottom struts
+
 \begin{document}
     \maketitle
     \tableofcontents
@@ -80,7 +84,10 @@ function proper_mod(a, b: integer): integer;
     easily `seekable'. This is important as for later programs, I'm planning to
     do a lot of backwards-and-forwards reading through the ciphertext. Ideally
     I would have written the routine to work with something like `an iterable
-    of characters', but I have to make some compromises in Pascal.
+    of characters', but I have to make some compromises in Pascal. Also, I will
+    absolutely not perform any kind of special operation for `lines' - CR;LF
+    characters are simply treated as punctuation so remain intact. This is
+    crucial as the `phase' of the cipher is persistent between lines.
 
     A short-lived byproduct of this was that any input files were mysteriously
     cut off. Inspection with wc showed that each file was cut off to exactly
@@ -153,6 +160,14 @@ end;
     a character, advancing the position in the key, and applying the shift
     using some modular arithmetic, using a conditional to preserve case, and
     correcting for the flaw that is 1-indexing.
+
+    It's actually also quite important that this function operates on the
+    plaintext as a holistic string - a Vigen\`ere encryption must track its
+    state across lines, words, or any subset of the text other than the text
+    itself. Encrypting it line by line would result in a significant amount of
+    extra overhead as the function would then have to track state across calls.
+    This might be done as a closure, or in this case simply by storing the
+    index in a variable parameter somewhere.
 
     This function uses its output slot to dynamically accumulate the output,
     rather than making another variable of the same type as the return type
@@ -250,7 +265,7 @@ end.
     statement. Because of this, the mode OBJFPC must be used.
 
     Note also that this program is configured to work with an output file -
-    although that output files is STDOUT, it still writes to a file streams
+    although that output file is STDOUT, it still writes to a file streams
     rather than using the primitive write or writeln with no file parameter.
     Input is similarly read from STDIN. This is pretty standard for a command
     line program - if the user wants to read from actual input files, this can
@@ -380,16 +395,16 @@ jih shkno ugein gyr pwsce kgiu ycu mdbl fzk
 	\begin{center}
 		\begin{tabular}{||l | c||} 
 		\hline
-		Command & Output \\ [0.5ex] 
+		Command & Output \TBstrut\\
 		\hline\hline
-        \$ echo Dog | bin/Vigenere b & Eph \\
+        \$ echo Dog | bin/Vigenere b & Eph \Tstrut\\
         \$ echo Dog | bin/Vigenere 1 & Eph \\
         \$ echo Dog | bin/Vigenere abc & Dpi \\
         \$ echo Eph | bin/Vigenere --decrypt b & Dog \\
         \$ echo xy\_z2 | bin/Vigenere 33 & ef\_g2 \\
         \$ echo ef\_g2 | bin/Vigenere --decrypt 33 & xy\_z2 \\
         \$ echo "Izaak van Dongen" | bin/Vigenere Python3.7 & Xxthy imu Tdlzlb \\
-        \$ echo "Xxthy imu Tdlzlb" | bin/Vigenere --decrypt Python3.7 & Izaak van Dongen \\ [1ex] 
+        \$ echo "Xxthy imu Tdlzlb" | bin/Vigenere --decrypt Python3.7 & Izaak van Dongen \Bstrut\\
         \hline
 	\end{tabular}
 	\end{center}
@@ -398,7 +413,7 @@ jih shkno ugein gyr pwsce kgiu ycu mdbl fzk
 
     \section{Determing keyword length}
 
-    How, having implemented the easy approach for decryption (where you know
+    Now, having implemented the easy approach for decryption (where you know
     the keyword), I decided to write a program that, for the user's
     convenience, doesn't require them to remember their Vigen\`ere key. The
     first step is to determine the length of the keyword. This is absolutely
@@ -695,7 +710,7 @@ end.
 
     Now I can put it to use. I will use challenge 4b from the cipher challenge
     as a demonstration. Cracking it takes literally two commands now, each
-    running in a couple of ms:
+    running in a couple of milliseconds:
 
 \begin{lstlisting}[caption=Cracking 4b, label={lst:iocchart}]
 $ cat ~/programmeren/cipher_tools/src/samples/4b.txt | bin/IOC 
@@ -735,7 +750,8 @@ resulting pt: OVER THE YEARS THE HEROIC ROLE OF AGRICOLA AT WATLING STREET...
     cipher, and crackers for substitution ciphers, playfair ciphers and bifid
     ciphers written in C using simulated annealing (including quadgram
     scoring). It also features a slightly derelict Python script that tries to
-    split punctuation-stripped text into
-    words using a prefix tree.
+    split punctuation-stripped text into words using a prefix tree. It has
+    about 2639 non-empty lines of source code, in contrast to this project's
+    251 lines.
 
 \end{document}
