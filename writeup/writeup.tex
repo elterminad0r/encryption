@@ -1,56 +1,14 @@
-\documentclass{article}
+% Paper size, font size, equations align to the left
+\documentclass[fleqn,a4paper,11pt]{article}
 \title{Encryption assignment}
 \author{Izaak van Dongen}
-\usepackage{savetrees}
 
-\usepackage{amsmath}
-\usepackage{amsfonts}
-\usepackage{commath}
+% Load all the configuration from a package, to keep content separate from
+% markup.
+\usepackage{mysty}
 
-\usepackage[parfill]{parskip}
-
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-
-\usepackage{graphicx}
-
-\graphicspath{ {images/} }
-
-\usepackage{listings}
-\usepackage{color}
-
-\definecolor{codegreen}{rgb}{0,0.6,0}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codepurple}{rgb}{0.58,0,0.82}
-\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
-\lstdefinestyle{mystyle}{
-    backgroundcolor=\color{backcolour},   
-    commentstyle=\color{codegreen},
-    keywordstyle=\color{magenta},
-    numberstyle=\tiny\color{codegray},
-    stringstyle=\color{codepurple},
-    basicstyle=\footnotesize,
-    breaklines=true,                 
-    captionpos=b,                    
-    keepspaces=true,                 
-    numbers=left,                    
-    numbersep=5pt,                  
-    showspaces=false,                
-    showstringspaces=false,
-    showtabs=false,                  
-    tabsize=2
-}
- 
-\lstset{style=mystyle}
-
-\lstset{
-    literate={~} {$\sim$}{1}
-}
-
-\newcommand\Tstrut{\rule{0pt}{2.6ex}}       % "top" strut
-\newcommand\Bstrut{\rule[-0.9ex]{0pt}{0pt}} % "bottom" strut
-\newcommand{\TBstrut}{\Tstrut\Bstrut} % top&bottom struts
-
+% The actual document content. Nowadays I would probably put this in a separate
+% .tex file and \input that.
 \begin{document}
     \maketitle
     \tableofcontents
@@ -116,7 +74,7 @@ end;
     following function will use it.
 
     I also wrote a function to retrieve the `alphabetic ordinal' of a letter
-    (ie an integer $k: 0 \leq k < 26$):
+    (ie an integer \(k: 0 \leq k < 26\)):
 
 \begin{lstlisting}[language=Pascal, caption=Proper modulo function]
 function alpha_ord(c: char): integer;
@@ -269,17 +227,17 @@ end.
     rather than using the primitive write or writeln with no file parameter.
     Input is similarly read from STDIN. This is pretty standard for a command
     line program - if the user wants to read from actual input files, this can
-    be easily done with \verb|$ bin/Vigenere key < input.txt > output.txt|, or
-    alternatively they might use the cat command. Leaving to writing to STDOUT
-    is a lot easier for dynamic testing purposes, and doesn't sacrifice any
-    functionality.  It should be fairly obvious that reading from STDIN
+    be easily done with \texttt{\$ bin/Vigenere key < input.txt > output.txt},
+    or alternatively they might use the cat command. Leaving to writing to
+    STDOUT is a lot easier for dynamic testing purposes, and doesn't sacrifice
+    any functionality.  It should be fairly obvious that reading from STDIN
     constitutes reading from a file, but here is also a demonstration of how
     this could be used with an output file rather than writing directly to the
     terminal:
 
 \begin{lstlisting}[caption=Use of an output file]
 $ echo "There should be one-- and preferably only one --obvious way to do it." | bin/Vigenere Guido > zen.txt
-$ cat zen.txt 
+$ cat zen.txt
 Zbmus ybwxzj vm rbk-- uvg dxynhfgvtb ctfg rbk --ijywuoa zoe nw gc on.
 $ bin/Vigenere --decrypt Guido < zen.txt
 There should be one-- and preferably only one --obvious way to do it.
@@ -289,9 +247,9 @@ There should be one-- and preferably only one --obvious way to do it.
     \section{Compiling and testing}
 
     This time I wrote another makefile, but one that works generically with my
-    Pascal naming conventions. It assumes that any some \verb|P(.*)\.pas| will
-    compile to \verb|bin/\1|, and also has a depency on all local units, which
-    take the form \verb|U.*\.pas|.
+    Pascal naming conventions. It assumes that any some \texttt{P(.*)\.pas} will
+    compile to \texttt{bin/\\1}, and also has a depency on all local units, which
+    take the form \texttt{U.*\.pas}.
 
 \begin{lstlisting}[language=make, caption=The generic FPC makefile]
 .PHONY: all
@@ -302,13 +260,13 @@ bin/%: P%.pas $(wildcard U*.pas)
 \end{lstlisting}
 \iffalse $ \fi %syntax
 
-    Note that this in fact uses three different languages to represent a
-    generic file - firstly, the generic makefile \verb|bin/%| and
-    \verb|P%.pas|, secondly the shell globs \verb|U*.pas| and \verb|P*.pas|,
-    and lastly the extended regex sed command \verb|s/P([^.]*)\.pas/bin\/\1/g|.
-    The make generics are needed to represent the instructions to build any
-    specific file. The shell glob is used to find all possible program files in
-    a directory, and the regex is used to scrape the executable names from the
+    Note that this in fact uses three different languages to represent a generic
+    file - firstly, the generic makefile \texttt{bin/\%} and \texttt{P\%.pas},
+    secondly the shell globs \texttt{U*.pas} and \texttt{P*.pas}, and lastly the
+    extended regex sed command \texttt{s/P([\^.]*)\.pas/bin\/\\1/g}. The make
+    generics are needed to represent the instructions to build any specific
+    file. The shell glob is used to find all possible program files in a
+    directory, and the regex is used to scrape the executable names from the
     program file names. Now, I can run `make', which builds the `all' target,
     which is phony so will always try to build all dependecies, which in this
     case is just `bin/Vigenere'.
@@ -323,7 +281,7 @@ bin/%: P%.pas $(wildcard U*.pas)
 In [2]: "".join(i.lower() if ind & 1 else i for ind, i in enumerate(string.ascii_uppercase))
 Out[2]: 'AbCdEfGhIjKlMnOpQrStUvWxYz'
 \end{lstlisting}
-    
+
     Anyway,
 
 \begin{lstlisting}[caption=Testing bin/Vigenere]
@@ -331,7 +289,7 @@ $ echo "AbCdEfGhIjKlMnOpQrStUvWxYz" | bin/Vigenere 1
 BcDeFgHiJkLmNoPqRsTuVwXyZa
 $ echo "AbCdEfGhIjKlMnOpQrStUvWxYz" | bin/Vigenere ab
 AcCeEgGiIkKmMoOqQsSuUwWyYa
-$ echo "AbCdEfGhIjKlMnOpQrStUvWxYz" | bin/Vigenere 3 
+$ echo "AbCdEfGhIjKlMnOpQrStUvWxYz" | bin/Vigenere 3
 DeFgHiJkLmNoPqRsTuVwXyZaBc
 $ echo "AbCdEfGhIjKlMnOpQrStUvWxYz" | bin/Vigenere 1 | bin/Vigenere --decrypt 1
 AbCdEfGhIjKlMnOpQrStUvWxYz
@@ -345,7 +303,7 @@ AbCdEfGhIjKlMnOpQrStUvWxYz
     probably be covered somewhere along the way.
 
 \begin{lstlisting}[caption=Shakespeare]
-$ cat ~/programmeren/A453/text/shakespeare.txt | wc -c                                          
+$ cat ~/programmeren/A453/text/shakespeare.txt | wc -c
 5458199
 $ time cat ~/programmeren/A453/text/shakespeare.txt | bin/Vigenere "William Shakespeare" | wc -c
 5458199
@@ -355,7 +313,7 @@ wc -c  0.00s user 0.01s system 1% cpu 0.919 total
 $ time diff <(cat ~/programmeren/A453/text/shakespeare.txt |
 >             bin/Vigenere "William Shakespeare" |
 >             bin/Vigenere --decrypt "William Shakespeare")
->           ~/programmeren/A453/text/shakespeare.txt 
+>           ~/programmeren/A453/text/shakespeare.txt
 diff  ~/programmeren/A453/text/shakespeare.txt  0.00s user 0.02s system 1% cpu 1.792 total
 \end{lstlisting}
 \iffalse $ \fi %syntax
@@ -371,7 +329,7 @@ diff  ~/programmeren/A453/text/shakespeare.txt  0.00s user 0.02s system 1% cpu 1
 
     As this is simultaneously an implementation of the one-time pad, we can use
     it as such. For now it will have to be more of a proof of concept, as the
-    key is limited to $< 255$ characters, as it's stored in a string and taken
+    key is limited to \(< 255\) characters, as it's stored in a string and taken
     from argv.
 
 \begin{lstlisting}[caption=Using the Vigen\`ere program for a one-time pad]
@@ -389,47 +347,46 @@ jih shkno ugein gyr pwsce kgiu ycu mdbl fzk
     cryptographically secure random bytes from /dev/urandom resulting in an
     unbreakable (undecryptable) encryption.
 
-    I also performed some further systematic tests after determining that
+    I also performed some further systematic tests after determining that the
     program could run successfully:
 
-	\begin{center}
-		\begin{tabular}{||l | c||} 
-		\hline
-		Command & Output \TBstrut\\
-		\hline\hline
-        \$ echo Dog | bin/Vigenere b & Eph \Tstrut\\
+    % Make the table columns be in a fixed width font
+    \begin{tabular}{>{\ttfamily}l >{\ttfamily}c}
+        \toprule
+        Command & Output \\
+        \midrule
+        \$ echo Dog | bin/Vigenere b & Eph \\
         \$ echo Dog | bin/Vigenere 1 & Eph \\
         \$ echo Dog | bin/Vigenere abc & Dpi \\
         \$ echo Eph | bin/Vigenere --decrypt b & Dog \\
         \$ echo xy\_z2 | bin/Vigenere 33 & ef\_g2 \\
         \$ echo ef\_g2 | bin/Vigenere --decrypt 33 & xy\_z2 \\
         \$ echo "Izaak van Dongen" | bin/Vigenere Python3.7 & Xxthy imu Tdlzlb \\
-        \$ echo "Xxthy imu Tdlzlb" | bin/Vigenere --decrypt Python3.7 & Izaak van Dongen \Bstrut\\
-        \hline
-	\end{tabular}
-	\end{center}
+        \$ echo "Xxthy imu Tdlzlb" | bin/Vigenere --decrypt Python3.7 & Izaak van Dongen \\
+        \bottomrule
+    \end{tabular}
 
     Each of these is correct behaviour.
 
     \section{Determing keyword length}
 
-    Now, having implemented the easy approach for decryption (where you know
-    the keyword), I decided to write a program that, for the user's
-    convenience, doesn't require them to remember their Vigen\`ere key. The
-    first step is to determine the length of the keyword. This is absolutely
-    trivial using some basic statistics and a tiny amount of computing power.
-    For each hypothesised key length, we can simply consider each sequence of
-    letters that would be encrypted by the same keyword letter - ie for a
-    keyword of length $l$ we get $l$ different sub-texts of the ciphertext,
-    where the $i$th of these is given by $S_i = \{C_{nl + i}:\ n \in \mathbb{N}
-    \ \land\ nl + i < \abs{c}\}$. If the hypothesis is correct, these will each
-    have been individually encrypted with a single letter of the key, so  we
-    then calculate the index of coincidence of the distribution of each of
-    these sub-texts. The IOC is the probability of any two letters being the
-    same. This has the very obvious property that if the letters change around,
-    the IOC will not change, so the IOC of a text is invariant under any kind
-    of monoalphabetic substitution cipher. It can be calculated from a
-    distribution $d$ indexed from 1 to 26 as follows:
+    Now, having implemented the easy approach for decryption (where you know the
+    keyword), I decided to write a program that, for the user's convenience,
+    doesn't require them to remember their Vigen\`ere key. The first step is to
+    determine the length of the keyword. This is absolutely trivial using some
+    basic statistics and a tiny amount of computing power. For each hypothesised
+    key length, we can simply consider each sequence of letters that would be
+    encrypted by the same keyword letter - ie for a keyword of length \(l\) we
+    get \(l\) different sub-texts of the ciphertext, where the \(i\)th of these
+    is given by \(S_i = \{C_{nl + i}:\ n \in \mathbb{N} \ \land\ nl + i <
+    \abs{c}\}\). If the hypothesis is correct, these will each have been
+    individually encrypted with a single letter of the key, so  we then
+    calculate the index of coincidence of the distribution of each of these
+    sub-texts. The IOC is the probability of any two letters being the same.
+    This has the very obvious property that if the letters change around, the
+    IOC will not change, so the IOC of a text is invariant under any kind of
+    monoalphabetic substitution cipher. It can be calculated from a distribution
+    \(d\) indexed from 1 to 26 as follows:
 
 \begin{align*}
     \text{IOC}\ &= \frac{\sum\limits_{i = 1}^{26} d_i (d_i - 1)}{T (T - 1)}\\
@@ -438,7 +395,7 @@ jih shkno ugein gyr pwsce kgiu ycu mdbl fzk
 
     The IOC is a very strong indicator of natural language/English. The
     expected IOC of English is around 0.067, whereas for uniformly distributed
-    text the expected distribution is $\frac{1}{26} = 0.0385$.
+    text the expected distribution is \(\frac{1}{26} = 0.0385\).
 
     All of the cracking functions have been written in one unit, `UAttack.pas'.
     This unit has the following interface:
@@ -478,7 +435,7 @@ function normalise(d: dist): norm_dist;
     Wikipedia.
 
     Now, the first thing you need to do if you want to perform this analysis by
-    IOC is to actually get our $S_i$ substrings. For this, first we'll want to
+    IOC is to actually get our \(S_i\) substrings. For this, first we'll want to
     strip away all characters we aren't interested in. This is what the `clean'
     function does:
 
@@ -535,7 +492,7 @@ end;
 \end{lstlisting}
 
     The only thing of real note here is that the IOC function only makes one
-    pass, where it accumulates its denominator and the total $T$ value.
+    pass, where it accumulates its denominator and the total \(T\) value.
 
     Now, I needed to write a program that put these functions to use.
 
@@ -571,8 +528,9 @@ begin
 end.
 \end{lstlisting}
 
-    This firstly calculates the average IOC for each of the $l$ sub-texts for a
-    hypothesised key length $l$, and then displays this as a bar graph of $l$
+    This firstly calculates the average IOC for each of the \(l\) sub-texts for a
+    hypothesised key length \(l\), and then displays this as a bar graph of
+    \(l\)
     against IOC. My actual source code uses the character U+2796, or `HEAVY
     MINUS SIGN', to produce a smooth bar graph. This uses the C-like `format'
     function to ensure that everything is properly aligned (see listing
@@ -583,8 +541,8 @@ end.
     Now that we can assume we know the length of the keyword, we can start to
     attack the keyword itself. To do this, we will need a little brute force -
     with very low complexity. The number of possibilities that need to be
-    checked as $26l$, which is effectively constant, as for most ciphertexts
-    $l$ will be $< 20$. Therefore the only real factor will be the length of
+    checked as \(26l\), which is effectively constant, as for most ciphertexts
+    \(l\) will be \(< 20\). Therefore the only real factor will be the length of
     the ciphertext, in which this algorithm should be roughly linear.
 
     To fully automate this, we will need to produce a fitness metric for some
@@ -713,7 +671,7 @@ end.
     running in a couple of milliseconds:
 
 \begin{lstlisting}[caption=Cracking 4b, label={lst:iocchart}]
-$ cat ~/programmeren/cipher_tools/src/samples/4b.txt | bin/IOC 
+$ cat ~/programmeren/cipher_tools/src/samples/4b.txt | bin/IOC
  1 (0.0429) ---------------------
  2 (0.0429) ---------------------
  3 (0.0428) ---------------------
@@ -740,9 +698,9 @@ resulting pt: OVER THE YEARS THE HEROIC ROLE OF AGRICOLA AT WATLING STREET...
 \end{lstlisting}
 
     \section{Source} All involved files, including this \LaTeX{} document, can
-    be found at \verb|https://github.com/elterminad0r/encryption|. An
+    be found at \url{https://github.com/elterminad0r/encryption}. An
     interested reader may also wish to explore
-    \verb|https://github.com/elterminad0r/cipher_tools|, the repository with
+    \url{https://github.com/elterminad0r/cipher_tools}, the repository with
     all the code I produced for the cipher challenge this year. It includes
     automated crackers for the Hill cipher, autokey cipher and affine
     Vigen\`ere ciphers by brute force, a framework to allow a user to make
