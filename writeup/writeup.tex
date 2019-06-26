@@ -171,37 +171,8 @@ end;
     routines and interface with the command line to allow them to be used. The
     program is as follows:
 
-\begin{lstlisting}[language=Pascal, caption=Command-line interface for Vigen\`ere routines (PVigenere.pas)]
-{$MODE OBJFPC}
-
-program PVigenere;
-
-uses
-    UEncrypt, UFiles, SysUtils;
-
-type
-    crypt_func = function(pt: ansistring; pass: string): ansistring;
-
-var
-    pass: string;
-    arg_i: integer;
-    encryptor: crypt_func = @vigenere;
-begin
-    pass := 'n';
-    for arg_i := 1 to paramcount do
-        if paramstr(arg_i) = '--decrypt' then
-            encryptor := @un_vigenere
-        else
-            try
-                pass := alph_s[1 + proper_mod(strtoint(paramstr(arg_i)), 26)];
-            except
-                on EConvertError do
-                    pass := paramstr(arg_i);
-            end;
-    write(output, encryptor(read_file(input), pass));
-end.
-\end{lstlisting}
-\iffalse $ \fi %syntax
+\lstinputlisting[language=Pascal, caption=Command-line interface for Vigen\`ere routines (PVigenere.pas)]
+{../src/PVigenere.pas}
 
     This `parses' the command-line arguments to determine what to do with what
     parameters. If it encounters the argument `-{}-decrypt' anywhere, it uses the
@@ -251,14 +222,8 @@ There should be one-- and preferably only one --obvious way to do it.
     compile to \texttt{bin/\\1}, and also has a depency on all local units, which
     take the form \texttt{U.*\.pas}.
 
-\begin{lstlisting}[language=make, caption=The generic FPC makefile]
-.PHONY: all
-all: $(shell echo P*.pas | sed -E "s/P([^.]*)\.pas/bin\/\1/g")
-
-bin/%: P%.pas $(wildcard U*.pas)
-	fpc -TLinux -o$@ $<
-\end{lstlisting}
-\iffalse $ \fi %syntax
+\lstinputlisting[language=make, caption=The generic FPC makefile]
+{../src/Makefile}
 
     Note that this in fact uses three different languages to represent a generic
     file - firstly, the generic makefile \texttt{bin/\%} and \texttt{P\%.pas},
@@ -268,7 +233,7 @@ bin/%: P%.pas $(wildcard U*.pas)
     file. The shell glob is used to find all possible program files in a
     directory, and the regex is used to scrape the executable names from the
     program file names. Now, I can run `make', which builds the `all' target,
-    which is phony so will always try to build all dependecies, which in this
+    which is phony so will always try to build all dependencies, which in this
     case is just `bin/Vigenere'.
 
     Anyway, having built my executable `bin/Vigenere', I could now verify that
@@ -496,37 +461,11 @@ end;
 
     Now, I needed to write a program that put these functions to use.
 
-\begin{lstlisting}[language=Pascal, caption=Command-line interface to IOC functions (PIOC.pas)]
-program PIOC;
-
-uses UAttack, UFiles, Sysutils, Strutils;
-
-function interval_ioc(pt: ansistring; interval: integer): real;
-var
-    start: integer;
-begin
-    interval_ioc := 0;
-    for start := 0 to interval - 1 do
-        interval_ioc := interval_ioc + IOC(get_dist(get_interval(pt, start, interval)));
-    interval_ioc := interval_ioc / interval;
-end;
-
-procedure print_IOC(pt: ansistring; max_interval: integer);
-var
-    interval: integer;
-begin
-    for interval := 1 to max_interval do begin
-        writeln(format('%2d (%.4f) %s', [interval,
-                                         interval_ioc(pt, interval),
-                                         dupestring('-',
-                                                    trunc(interval_ioc(pt, interval) * 500))]));
-    end;
-end;
-
-begin
-    print_ioc(clean(read_file(input)), 20);
-end.
-\end{lstlisting}
+% If this bit isn't working, it's probably because your LaTeX compiler is not
+% unicode-aware. If possible, try using XeLaTeX. If you're using latexmk, which
+% you should be, latexmk -xelatex will do the trick.
+\lstinputlisting[language=Pascal, caption=Command-line interface to IOC functions (PIOC.pas)]
+{../src/PIOC.pas}
 
     This firstly calculates the average IOC for each of the \(l\) sub-texts for a
     hypothesised key length \(l\), and then displays this as a bar graph of
@@ -594,65 +533,8 @@ end;
 
     And here is the calling program:
 
-\begin{lstlisting}[language=Pascal, caption=Keyword-cracking program (PCrack.pas)]
-{$MODE OBJFPC}
-
-program PCrack;
-
-uses UAttack, UEncrypt, UFiles, Sysutils;
-
-function likely_caes(pt: ansistring): char;
-var
-    c, best_c: char;
-    f, best_f: real;
-begin
-    best_f := -999;
-    for c := 'A' to 'Z' do begin
-        f := -fitness(normalise(get_dist(un_vigenere(pt, c))));
-        if f > best_f then begin
-            best_f := f;
-            best_c := c;
-        end;
-    end;
-    likely_caes := best_c;
-end;
-
-function likely_vig(pt: ansistring; keyl: integer): string;
-var
-    strpd: ansistring;
-    start: integer;
-begin
-    strpd := clean(pt);
-    likely_vig := '';
-    for start := 0 to keyl - 1 do
-        likely_vig := likely_vig + likely_caes(get_interval(strpd, start, keyl));
-end;
-
-var
-    vg_key: string;
-    pt: ansistring;
-    keyl: integer;
-begin
-    if paramcount > 0 then
-        try
-            keyl := strtoint(paramstr(1));
-        except
-            on EConvertError do begin
-                writeln(stderr, 'Invalid key length ', paramstr(1));
-                exit;
-            end;
-        end
-    else begin
-        writeln(stderr, 'Key length required; see bin/IOC');
-        exit;
-    end;
-    pt := read_file(input);
-    vg_key := likely_vig(pt, keyl);
-    writeln(output, 'key is ', vg_key);
-    writeln(output, 'resulting pt: ', un_vigenere(pt, vg_key));
-end.
-\end{lstlisting}
-\iffalse $ \fi %syntax
+\lstinputlisting[language=Pascal, caption=Keyword-cracking program (PCrack.pas)]
+{../src/PCrack.pas}
 
     This first actually defines a function `likely\_caes' to crack a caesar
     cipher, determining a single letter. This function is then called from

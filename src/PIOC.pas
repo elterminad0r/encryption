@@ -19,7 +19,7 @@ begin
     for interval := 1 to max_interval do begin
         writeln(format('%2d (%.4f) %s', [interval,
                                          interval_ioc(pt, interval),
-                                         dupestring('➖',
+                                         dupestring('─',
                                                     trunc(interval_ioc(pt, interval) * 500))]));
     end;
 end;
